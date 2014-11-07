@@ -20,6 +20,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     let eventStore = EKEventStore()
     let RSVPColor = UIColor(red: 63/255, green: 195/255, blue: 168/255, alpha: 1)
     let cancelColor = UIColor(red: 255/255, green: 193/255, blue: 126/255, alpha: 1)
+    var checkedInState: Bool = false
     
     @IBOutlet weak var rsvpButton: UIButton!
     @IBOutlet weak var tableView: UITableView!    
@@ -35,6 +36,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
          tableView.rowHeight = UITableViewAutomaticDimension
          tableView.estimatedRowHeight = 96
         // Do any additional setup after loading the view.
+
         
         //if segue from profile view controller , otherwise, objectId should be set
          if self.eventIdAndRsvped != nil {
@@ -46,6 +48,67 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
         }
          fetchTheEvent()
     }
+    
+    //Check if we can check in into this event, display the check in button
+    func canCheckIn()->Bool{
+        if (RSVPstate == true) && (self.checkedInState == false) {
+
+            var before12 = NSDate().dateByAddingTimeInterval(-60*60*12)
+            var after12 = NSDate().dateByAddingTimeInterval(60*60*12)
+            var compareBefore = before12.compare(thisEvent.eventDate!)
+            var compareAfter = after12.compare(thisEvent.eventDate!)
+            //println("compareBefore: \(compareBefore.rawValue), compareAfter: \(compareAfter.rawValue)")
+            
+            if compareBefore == NSComparisonResult.OrderedSame || compareBefore == NSComparisonResult.OrderedAscending{
+                if compareAfter == NSComparisonResult.OrderedSame || compareAfter == NSComparisonResult.OrderedDescending{
+                    println("Can check in the event!")
+                    return true
+                }else{
+                    println("Can't check in yet")
+                }
+            }else{
+                println("Can't check in yet")
+            }
+        }else{
+            println("Cannot check in: RSVPstate is \(RSVPstate)")
+        }
+        return false
+        
+    }
+    
+    //Check if this event is already checked in or not
+    func checkedInStatus(){
+
+        var user = PFUser.currentUser()
+        var relation = user.relationForKey("checkedIn")
+        var events = ParseEvent.query() as PFQuery
+        events.getObjectInBackgroundWithId(self.eventObjectId) { (object: PFObject!, error: NSError!) -> Void in
+            if object != nil{
+                //Already checked in, display something else
+                self.checkedInState = true
+            }else{
+                self.checkedInState = false
+            }
+        }
+        println("In checkedInStatus, checkedInState: \(self.checkedInState)")
+        
+    }
+    
+    func checkInEvent(){
+        var user = PFUser.currentUser()
+        var relation = user.relationForKey("checkedIn")
+        var events = ParseEvent.query() as PFQuery
+        events.getObjectInBackgroundWithId(self.eventObjectId) { (object: PFObject!, error: NSError!) -> Void in
+            if object != nil{
+                relation.addObject(object)
+                user.saveEventually()
+                self.checkedInState = true
+            }else{
+                println("Error in checking in event")
+            }
+        }
+    }
+    
     
     @IBAction func onAddEvent(sender: AnyObject) {
         
@@ -84,8 +147,11 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
         query.getObjectInBackgroundWithId(self.eventObjectId ) { (object: PFObject!, error: NSError!) -> Void in
             if object != nil {
                 let event = object as ParseEvent 
-                self.thisEvent = event 
+                self.thisEvent = event
+                self.checkedInStatus()
+                self.canCheckIn()
                 self.tableView.reloadData()
+
             } else {
                 println("getting detail event error \(error) ")
             }
@@ -159,7 +225,11 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
         }else{
             
             if(sectionKey[section] == "TimeInfo"){
-                return 3
+                if(self.canCheckIn()){
+                    return 4
+                }else{
+                    return 3
+                }
             }else{
                 return 1
             }
@@ -186,7 +256,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             })
             return cell
             
-        }else {
+        }else if(self.canCheckIn() == false) {
             //Time
             switch indexPath.row {
                 
@@ -196,6 +266,30 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 return cell
                 
             case 1:
+                var cell = tableView.dequeueReusableCellWithIdentifier("Description") as EventDescriptionTableViewCell
+                cell.descriptionLabel.text = self.thisEvent.eventDetail
+                return cell
+                
+            default:
+                tableView.rowHeight = 380
+                var cell = tableView.dequeueReusableCellWithIdentifier("Map") as EventMapTableViewCell
+                cell.addAnotation(self.thisEvent!)
+                return cell
+            }
+        }else {
+            //Add check in button
+            switch indexPath.row {
+                
+            case 0:
+                var cell = tableView.dequeueReusableCellWithIdentifier("CheckInCell") as CheckInTableViewCell
+                return cell
+                
+            case 1:
+                var cell = tableView.dequeueReusableCellWithIdentifier("Time") as EventTimeTableViewCell
+                cell.timeLabel.text = "\(self.thisEvent.dateToShow!)"
+                return cell
+                
+            case 2:
                 var cell = tableView.dequeueReusableCellWithIdentifier("Description") as EventDescriptionTableViewCell
                 cell.descriptionLabel.text = self.thisEvent.eventDetail
                 return cell

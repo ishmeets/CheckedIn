@@ -340,6 +340,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
             }
         }
     }
+    
     func fetchPastEvents(){
         var query = ParseEvent.query() as PFQuery
          query.whereKey("EventDate", lessThan: NSDate().dateByAddingTimeInterval  (-60*60*12))
@@ -353,6 +354,9 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
                 }
         }
     }
+    
+
+
     
     func unRsvpEvent(selectedEventObjectId:String) {
         var user = PFUser.currentUser()
@@ -411,6 +415,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
         }
         return false
     }
+    
     
     @IBAction func onLogout(sender: AnyObject) {
         println("Logout")

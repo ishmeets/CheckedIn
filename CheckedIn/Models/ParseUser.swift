@@ -28,6 +28,11 @@ class ParseUser:  PFUser,PFSubclassing {
         set {setObject(newValue, forKey: "rsvped")}
     }
     
+    var checkInEvents: [ParseEvent]{
+        get {return objectForKey("checkedIn") as [ParseEvent]}
+        set {setObject(newValue, forKey: "checkedIn")}
+    }
+    
     var userImage:PFFile? {
         get {return objectForKey("userImage") as? PFFile}
         set {setObject(newValue, forKey: "userImage")}
