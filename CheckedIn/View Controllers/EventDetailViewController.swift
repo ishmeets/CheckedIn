@@ -101,6 +101,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             if object != nil {
                 relation.removeObject(object)
                 user.saveEventually()
+                self.removeEventFromCalendar()
             } else {
                 println("rsvp event error \(error)")
             }
@@ -252,6 +253,29 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             //println("add into calendar : \(result)")
             UIAlertView(title: "Calendar Item added", message: "Your event is added into your calendar on \(self.thisEvent.eventDate!). ", delegate: self, cancelButtonTitle: "OK").show()
 
+    }
+    
+    //Will automatically remove Event when user unRSVP
+    func removeEventFromCalendar(){
+        
+        var startDate = self.thisEvent.eventDate?.dateByAddingTimeInterval(-60*60*24)
+        var endDate = self.thisEvent.eventDate?.dateByAddingTimeInterval(60*60*24*3)
+        var predicate = self.eventStore.predicateForEventsWithStartDate(startDate, endDate: endDate, calendars: nil)
+        var eV = self.eventStore.eventsMatchingPredicate(predicate) as [EKEvent]!
+        
+        if eV != nil{
+            for i in eV{
+                if i.title == self.thisEvent.EventName{
+                    // println("Found the event, remove")
+                    var result = eventStore.removeEvent(i, span: EKSpanThisEvent, error: nil)
+                    println("remove event from calendar: \(result)")
+                    
+                }
+            }
+        }else{
+            println("cannot find the event to remove")
+        }
+        
     }
 
     func requestEventAccess()  {
