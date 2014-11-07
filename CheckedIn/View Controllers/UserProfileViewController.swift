@@ -49,7 +49,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
         case 1:
             showAllEvents()
         case 2:
-            showCheckedInEvents()
+            showPastEvents()
         default:
             println("default")
         }
@@ -77,7 +77,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
             showAllEvents()
         case 2 :
             self.selectedIndex = 2
-            showCheckedInEvents()
+            showPastEvents()
         default:
             println ("default")
         }
@@ -99,7 +99,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
     
     //MARK: tableview delegate
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        var itemArray = ["RSVP events", "All events" , "CheckedIn events"]
+        var itemArray = ["RSVP events", "All events" , "Past events"]
         var headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 35))
         var control = UISegmentedControl(items: itemArray)
         control.frame = headerView.frame
@@ -185,8 +185,14 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
         }
         
         let event = events?[indexPath.row] as ParseEvent
-        var eventIdAndRsvped = [ "objectId": event.objectId, "isRsvped" : isAlreadyRSVPed(event.objectId) ]
-        self.performSegueWithIdentifier("ShowDetailSegue", sender: eventIdAndRsvped)
+        if selectedIndex == 2 {
+            var  eventIdAndRsvped = [  "objectId": event.objectId  ]
+ 
+            self.performSegueWithIdentifier("ShowDetailSegue", sender: eventIdAndRsvped)
+        } else {
+            var  eventIdAndRsvped = [ "objectId": event.objectId, "isRsvped" : isAlreadyRSVPed(event.objectId) ]
+            self.performSegueWithIdentifier("ShowDetailSegue", sender: eventIdAndRsvped)
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -259,28 +265,29 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
         self.events = nil
         fetchAllEvents()
     }
-    func showCheckedInEvents() {
-        fetchCheckedInEvents()
+    func showPastEvents() {
+        fetchPastRsvpedEvents(nil)
+        //fetchCheckedInEvents()
     }
     
-    func fetchCheckedInEvents(){
-        var user = PFUser.currentUser()
-        var relation = user.relationForKey("checkedIn")
-        relation.query().findObjectsInBackgroundWithBlock { (objects: [AnyObject]!, error: NSError!) -> Void in
-            if error != nil {
-                println("error retrieving rsvped events")
-            } else {
-                self.events = objects
-                self.tableView.reloadData()
-            }
-        }
-    }
+//    func fetchCheckedInEvents(){
+//        var user = PFUser.currentUser()
+//        var relation = user.relationForKey("checkedIn")
+//        relation.query().findObjectsInBackgroundWithBlock { (objects: [AnyObject]!, error: NSError!) -> Void in
+//            if error != nil {
+//                println("error retrieving rsvped events")
+//            } else {
+//                self.events = objects
+//                self.tableView.reloadData()
+//            }
+//        }
+//    }
     
     func fetchRsvpedEvents(isRsvped:Bool?){
         var user = PFUser.currentUser()
         var relation = user.relationForKey("rsvped")
         var query = relation.query()
-        query.whereKey("EventDate", greaterThanOrEqualTo: NSDate().dateByAddingTimeInterval  (-60*60*5))
+        query.whereKey("EventDate", greaterThanOrEqualTo: NSDate().dateByAddingTimeInterval  (-60*60*12))
         query.orderByAscending("EventDate")
             query.findObjectsInBackgroundWithBlock { (objects: [AnyObject]!, error: NSError!) -> Void in
             if error != nil {
@@ -300,11 +307,34 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
         }
     }
     
+    func fetchPastRsvpedEvents(isRsvped:Bool?){
+        var user = PFUser.currentUser()
+        var relation = user.relationForKey("rsvped")
+        var query = relation.query()
+        query.whereKey("EventDate", lessThan: NSDate().dateByAddingTimeInterval  (-60*60*12))
+        query.orderByAscending("EventDate")
+        query.findObjectsInBackgroundWithBlock { (objects: [AnyObject]!, error: NSError!) -> Void in
+            if error != nil {
+                println("error retrieving rsvped events")
+            } else {
+                if isRsvped == nil {
+                    self.events = objects
+                    self.allMyEvents = objects
+                    self.tableView.reloadData()
+                } else {
+                    //fetch after rsvp action
+                    self.allMyEvents = objects
+                    self.fetchAllEvents()
+                }
+                
+            }
+        }
+    }
+    
     func fetchAllEvents(){
         var query = ParseEvent.query() as PFQuery
-//        query.whereKey("EventDate", greaterThanOrEqualTo: NSDate())
         
-        query.whereKey("EventDate", greaterThanOrEqualTo: NSDate().dateByAddingTimeInterval  (-60*60*5))
+        query.whereKey("EventDate", greaterThanOrEqualTo: NSDate().dateByAddingTimeInterval  (-60*60*12))
         query.orderByAscending("EventDate")
         query.findObjectsInBackgroundWithBlock { (objects: [AnyObject]!, error: NSError!) -> Void in
             if objects != nil {
@@ -313,6 +343,19 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
             } else {
                 println("fetch all events error \(error)")
             }
+        }
+    }
+    func fetchPastEvents(){
+        var query = ParseEvent.query() as PFQuery
+         query.whereKey("EventDate", lessThan: NSDate().dateByAddingTimeInterval  (-60*60*12))
+        query.orderByDescending("EventDate")
+            query.findObjectsInBackgroundWithBlock { (objects: [AnyObject]!, error: NSError!) -> Void in
+                if objects != nil {
+                    self.events = objects
+                    self.tableView.reloadData()
+                } else {
+                    println("fetch all events error \(error)")
+                }
         }
     }
     
@@ -336,6 +379,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
                 })
             } else {
             println("rsvp event error \(error)")
+        
             }
             
         }
