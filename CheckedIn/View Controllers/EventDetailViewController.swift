@@ -71,7 +71,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 println("Can't check in yet")
             }
         }else{
-            println("Cannot check in: RSVPstate is \(RSVPstate)")
+            println("Cannot check in: RSVPstate is \(RSVPstate!), checkedInState is \(self.checkedInState)")
         }
         return false
         
@@ -85,13 +85,15 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
         var events = ParseEvent.query() as PFQuery
         events.getObjectInBackgroundWithId(self.eventObjectId) { (object: PFObject!, error: NSError!) -> Void in
             if object != nil{
+                println("Already Checked in!!!! objectId: \(object.objectId), self.eventID: \(self.eventObjectId)")
                 //Already checked in, display something else
                 self.checkedInState = true
             }else{
+                println("Not checked in yet!")
                 self.checkedInState = false
             }
+            self.tableView.reloadData()
         }
-        println("In checkedInStatus, checkedInState: \(self.checkedInState)")
         
     }
     
@@ -153,9 +155,8 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             if object != nil {
                 let event = object as ParseEvent 
                 self.thisEvent = event
-                self.checkedInStatus()
-                self.canCheckIn()
-                self.tableView.reloadData()
+                self.checkedInStatus() //This also refresh tableView
+                //self.tableView.reloadData()
 
             } else {
                 println("getting detail event error \(error) ")
@@ -261,7 +262,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             })
             return cell
             
-        }else if(self.canCheckIn() == false) {
+        }else if(self.canCheckIn() == false && self.checkedInState != true) {
             //Time
             switch indexPath.row {
                 
