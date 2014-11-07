@@ -24,6 +24,7 @@
 		8FCBCA461A01F26600F4D640 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FCBCA451A01F26600F4D640 /* MapKit.framework */; };
 		9356A202CB027A3953679D15 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB3FB137615D915D37781E3 /* libPods.a */; };
 		D006CCC919FB264400C067BB /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D006CCC819FB264400C067BB /* UserProfileViewController.swift */; };
+		D0077EFD1A0C9383004CCE35 /* CheckInTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0077EFC1A0C9383004CCE35 /* CheckInTableViewCell.swift */; };
 		D01C8E691A0ABD440029367F /* addEvent.png in Resources */ = {isa = PBXBuildFile; fileRef = D01C8E681A0ABD440029367F /* addEvent.png */; };
 		D025AAE51A06E4B2009F08A8 /* EventRSVPButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D025AAE41A06E4B2009F08A8 /* EventRSVPButtonView.swift */; };
 		D030FB321A00B02C003F0384 /* rsvpedMark.png in Resources */ = {isa = PBXBuildFile; fileRef = D030FB311A00B02C003F0384 /* rsvpedMark.png */; };
@@ -104,6 +105,7 @@
 		8FCBCA451A01F26600F4D640 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9DCEE7B702F45ED20D3EDB25 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		D006CCC819FB264400C067BB /* UserProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
+		D0077EFC1A0C9383004CCE35 /* CheckInTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckInTableViewCell.swift; sourceTree = "<group>"; };
 		D01C8E681A0ABD440029367F /* addEvent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = addEvent.png; path = Images.xcassets/addEvent.png; sourceTree = "<group>"; };
 		D025AAE41A06E4B2009F08A8 /* EventRSVPButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EventRSVPButtonView.swift; path = "View Controllers/EventRSVPButtonView.swift"; sourceTree = "<group>"; };
 		D030FB311A00B02C003F0384 /* rsvpedMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rsvpedMark.png; path = Images.xcassets/rsvpedMark.png; sourceTree = "<group>"; };
@@ -321,6 +323,7 @@
 				8F00CE961A0713AD0095B4B9 /* EventMapTableViewCell.swift */,
 				D03DDB4A1A05A05C00252CEF /* EventTimeTableViewCell.swift */,
 				D03DDB4C1A05A06900252CEF /* EventDescriptionTableViewCell.swift */,
+				D0077EFC1A0C9383004CCE35 /* CheckInTableViewCell.swift */,
 			);
 			name = TableCell;
 			sourceTree = "<group>";
@@ -526,6 +529,7 @@
 				8F00CE971A0713AD0095B4B9 /* EventMapTableViewCell.swift in Sources */,
 				828C6F4D19EA8076002FE979 /* AppDelegate.swift in Sources */,
 				D0F5236E19FD7E5700771856 /* LoginViewController.swift in Sources */,
+				D0077EFD1A0C9383004CCE35 /* CheckInTableViewCell.swift in Sources */,
 				D0661DE11A009A650060B8D0 /* EventHeaderTableViewCell.swift in Sources */,
 				D03DDB4D1A05A06900252CEF /* EventDescriptionTableViewCell.swift in Sources */,
 			);

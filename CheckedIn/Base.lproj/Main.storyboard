@@ -564,6 +564,37 @@
                                                     <outlet property="eventTitleLabel" destination="ofG-3T-taI" id="ffI-Lq-YKN"/>
                                                 </connections>
                                             </tableViewCell>
+                                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CheckInCell" rowHeight="67" id="ons-g5-iJV" customClass="CheckInTableViewCell" customModule="CheckedIn" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ons-g5-iJV" id="fP4-fi-nMA">
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5ry-ou-Cxh">
+                                                            <rect key="frame" x="200" y="16" width="200" height="36"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="200" id="ahc-ga-RIV"/>
+                                                            </constraints>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                            <state key="normal" title="Check in">
+                                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                            </state>
+                                                            <connections>
+                                                                <action selector="onCheckIn:" destination="ons-g5-iJV" eventType="touchUpInside" id="zJr-qr-NbO"/>
+                                                            </connections>
+                                                        </button>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="5ry-ou-Cxh" firstAttribute="top" secondItem="fP4-fi-nMA" secondAttribute="topMargin" constant="8" id="Mdc-02-SZ6"/>
+                                                        <constraint firstAttribute="bottomMargin" secondItem="5ry-ou-Cxh" secondAttribute="bottom" constant="7" id="aIj-tu-p6q"/>
+                                                        <constraint firstAttribute="centerX" secondItem="5ry-ou-Cxh" secondAttribute="centerX" id="eTs-Ov-Tbr"/>
+                                                        <constraint firstAttribute="centerY" secondItem="5ry-ou-Cxh" secondAttribute="centerY" id="z1I-8t-SzZ"/>
+                                                    </constraints>
+                                                </tableViewCellContentView>
+                                                <connections>
+                                                    <outlet property="checkInButton" destination="5ry-ou-Cxh" id="oAt-l1-eEt"/>
+                                                </connections>
+                                            </tableViewCell>
                                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Time" rowHeight="63" id="LQn-9O-FQP" customClass="EventTimeTableViewCell" customModule="CheckedIn" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                                 <autoresizingMask key="autoresizingMask"/>
