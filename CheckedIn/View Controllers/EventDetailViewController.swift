@@ -12,7 +12,6 @@ import UIKit
 import EventKit
 
 class EventDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate {
-    
     @IBOutlet weak var addToCalendarButton: UIBarButtonItem!
     var eventIdAndRsvped:NSDictionary?
     var eventObjectId:String?
@@ -23,15 +22,14 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     let cancelColor = UIColor(red: 255/255, green: 193/255, blue: 126/255, alpha: 1)
     
     @IBOutlet weak var rsvpButton: UIButton!
-    @IBOutlet weak var tableView: UITableView!
-    
+    @IBOutlet weak var tableView: UITableView!    
+    @IBOutlet weak var uiViewrsvpButton: UIView!
     var sectionKey = ["Header", "TimeInfo" ] //We can add more here
-    
+   
+    //MARK: View Controller UI
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Event Detail"
-     
-        
          tableView.delegate = self
          tableView.dataSource = self
          tableView.rowHeight = UITableViewAutomaticDimension
@@ -41,60 +39,33 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
         //if segue from profile view controller , otherwise, objectId should be set
          if self.eventIdAndRsvped != nil {
             self.eventObjectId = eventIdAndRsvped?.objectForKey("objectId") as String?
-            
             if let rsvpState = eventIdAndRsvped?.objectForKey("isRsvped") as Bool? {
                 self.RSVPstate = eventIdAndRsvped?.objectForKey("isRsvped") as Bool?
             }
             showRSVPButton()
-            
- 
         }
          fetchTheEvent()
     }
     
-    func fetchTheEvent (){
+    @IBAction func onAddEvent(sender: AnyObject) {
         
-        var query = ParseEvent.query()        
-        query.getObjectInBackgroundWithId(self.eventObjectId ) { (object: PFObject!, error: NSError!) -> Void in
-            if object != nil {
-                let event = object as ParseEvent 
-                self.thisEvent = event 
-                self.tableView.reloadData()
-                
-            } else {
-                println("getting detail event error \(error) ")
-            }
-        }
-    }
-
-    //This function only change the look of the RSVPButton, it does not immediately update RSVP info on Parse
-    // We do that when user dismiss this controller, just to save some bandwith
-    func showRSVPButton(){
-        //println("Changing RSVP from \(RSVPstate) to \(updateState)")
+        //show user alert first about the access premission
         
-        //for past event, no button to show here
-         if self.RSVPstate == nil {
-            addToCalendarButton.enabled = false
-            rsvpButton.enabled = false
-            rsvpButton.alpha = 0
-            rsvpButton.backgroundColor = cancelColor
+        switch EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent)  {
+        case EKAuthorizationStatus.Authorized:
+            println("authorized")
+            addEventToCalendar()
+        case EKAuthorizationStatus.Denied :
+            println("denied")
+            UIAlertView(title: "Change Setting Needed", message: "You have denied our calendar access, please update the configuration on your IOS device.", delegate: self, cancelButtonTitle: "OK").show()
+        case EKAuthorizationStatus.NotDetermined:
+            println("request access")
+            requestEventAccess()
+            
+        default:
             return
         }
-        
-        if((self.RSVPstate) == true  ){
-             rsvpButton.backgroundColor = cancelColor
-            rsvpButton.tintColor = UIColor.blackColor()
-            rsvpButton.setTitle("Cancel RSVP", forState: .Normal)
-            addToCalendarButton.enabled = true
-         }else{
-            rsvpButton.backgroundColor = RSVPColor
-            rsvpButton.tintColor = UIColor.whiteColor()
-            rsvpButton.setTitle("RSVP", forState: .Normal)
-            addToCalendarButton.enabled = false
-         }
-        
     }
-    
     @IBAction func updateRSVP(sender: AnyObject) {
         //first update UI
         self.RSVPstate = !self.RSVPstate!
@@ -102,15 +73,26 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
         
         //since state changed for UI, here is oposite
         if self.RSVPstate == false {
-            unRsvpEvent()            
-         } else {
+            unRsvpEvent()
+        } else {
             rsvpEvent()
         }
-        
-
-
+    }
+    //MARK: Parse
+    func fetchTheEvent (){
+        var query = ParseEvent.query()
+        query.getObjectInBackgroundWithId(self.eventObjectId ) { (object: PFObject!, error: NSError!) -> Void in
+            if object != nil {
+                let event = object as ParseEvent 
+                self.thisEvent = event 
+                self.tableView.reloadData()
+            } else {
+                println("getting detail event error \(error) ")
+            }
+        }
     }
 
+    
     func unRsvpEvent() {
         var user = PFUser.currentUser()
         var relation = user.relationForKey("rsvped")
@@ -139,7 +121,35 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             }
         }
     }
-
+    
+    //MARK : UI update
+    //This function only change the look of the RSVPButton, it does not immediately update RSVP info on Parse
+    // We do that when user dismiss this controller, just to save some bandwith
+    func showRSVPButton(){
+        //println("Changing RSVP from \(RSVPstate) to \(updateState)")
+        //for past event, no button to show here
+         if self.RSVPstate == nil {
+            addToCalendarButton.enabled = false
+            self.uiViewrsvpButton.hidden = true
+            return
+        }
+        
+        if((self.RSVPstate) == true  ){
+             rsvpButton.backgroundColor = cancelColor
+            rsvpButton.tintColor = UIColor.blackColor()
+            rsvpButton.setTitle("Cancel RSVP", forState: .Normal)
+            addToCalendarButton.enabled = true
+         }else{
+            rsvpButton.backgroundColor = RSVPColor
+            rsvpButton.tintColor = UIColor.whiteColor()
+            rsvpButton.setTitle("RSVP", forState: .Normal)
+            addToCalendarButton.enabled = false
+         }
+        
+    }
+    
+    //MARK: tableview data source
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //Current behavior:
         //only "TimeInfo" section contains 2 rows, 1 is Time, 1 is Event info
@@ -154,7 +164,52 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             }
         }
     }
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        //Had to return cell in every conditional block, can't use lazy initialization :(
+        //Header
+        if(indexPath.section == 0){
+            var cell = tableView.dequeueReusableCellWithIdentifier("EventHeader") as EventHeaderTableViewCell
+            //Pass in cell info
+            
+            cell.eventTitleLabel.text = thisEvent.EventName
+            thisEvent.eventProfileImage?.getDataInBackgroundWithBlock({ (imageData: NSData!, error:NSError!) -> Void in
+                if imageData != nil {
+                    cell.eventLogoImage.image = UIImage(data: imageData)
+                    cell.bgImage.image = cell.eventLogoImage.image
+                    var blur = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.Dark))
+                    blur.frame = cell.bgImage.frame
+                    cell.bgImage.addSubview(blur)
+                    cell.backgroundView = cell.bgImage
+                    //                    println("Getting new image!")
+                }
+            })
+            return cell
+            
+        }else {
+            //Time
+            switch indexPath.row {
+                
+            case 0:
+                var cell = tableView.dequeueReusableCellWithIdentifier("Time") as EventTimeTableViewCell
+                cell.timeLabel.text = "\(self.thisEvent.dateToShow!)"
+                return cell
+                
+            case 1:
+                var cell = tableView.dequeueReusableCellWithIdentifier("Description") as EventDescriptionTableViewCell
+                cell.descriptionLabel.text = self.thisEvent.eventDetail
+                return cell
+                
+            default:
+                tableView.rowHeight = 380
+                var cell = tableView.dequeueReusableCellWithIdentifier("Map") as EventMapTableViewCell
+                cell.addAnotation(self.thisEvent!)
+                return cell
+            }
+        }
+        
+    }
     
+    //MARK: tableview delegate
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section == 0{
           //  println("First header section height is set to 0")
@@ -167,91 +222,28 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return sectionKey.count
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        //Had to return cell in every conditional block, can't use lazy initialization :(
-        //Header
-        if(indexPath.section == 0){
-            var cell = tableView.dequeueReusableCellWithIdentifier("EventHeader") as EventHeaderTableViewCell
-            //Pass in cell info
+    
 
-            cell.eventTitleLabel.text = thisEvent.EventName
-            thisEvent.eventProfileImage?.getDataInBackgroundWithBlock({ (imageData: NSData!, error:NSError!) -> Void in
-                if imageData != nil {
-                    cell.eventLogoImage.image = UIImage(data: imageData)
-                    cell.bgImage.image = cell.eventLogoImage.image
-                    var blur = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.Dark))
-                    blur.frame = cell.bgImage.frame
-                    cell.bgImage.addSubview(blur)
-                    cell.backgroundView = cell.bgImage
-//                    println("Getting new image!")
-                }
-            })
-            return cell
-            
-        }else {
-            //Time
-             switch indexPath.row {	
-                
-            case 0:
-                 var cell = tableView.dequeueReusableCellWithIdentifier("Time") as EventTimeTableViewCell
-                cell.timeLabel.text = "\(self.thisEvent.dateToShow!)"
-                return cell
-                
-            case 1:
-                 var cell = tableView.dequeueReusableCellWithIdentifier("Description") as EventDescriptionTableViewCell
-                 cell.descriptionLabel.text = self.thisEvent.eventDetail
-                return cell
-                
-              default:
-                tableView.rowHeight = 380
-                var cell = tableView.dequeueReusableCellWithIdentifier("Map") as EventMapTableViewCell
-                cell.addAnotation(self.thisEvent!)
-                return cell
-            }
-        }
- 
-    }
-    @IBAction func onAddEvent(sender: AnyObject) {
-        
-        //show user alert first about the access premission
-        
-        switch EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent)  {
-            case EKAuthorizationStatus.Authorized:
-                println("authorized")
-                addEventToCalendar()
-            case EKAuthorizationStatus.Denied :
-                println("denied")
-                UIAlertView(title: "Change Setting Needed", message: "You have denied our calendar access, please update the configuration on your IOS device.", delegate: self, cancelButtonTitle: "OK").show()
-            case EKAuthorizationStatus.NotDetermined:
-                println("request access")
-                requestEventAccess()
-            
-            default:
-                return
-        }
-    }
-   
+   //MARK: calendar methods
     func addEventToCalendar(){
         //Add code to save event
-        println("\n[ ]>>>>>> \(__FILE__.pathComponents.last!) >> \(__FUNCTION__) < \(__LINE__) >")
-        var startDate = self.thisEvent.eventDate?.dateByAddingTimeInterval(-60*60*24)
+         var startDate = self.thisEvent.eventDate?.dateByAddingTimeInterval(-60*60*24)
         var endDate = self.thisEvent.eventDate?.dateByAddingTimeInterval(60*60*24*3)
-       
         var predicate = self.eventStore.predicateForEventsWithStartDate(startDate, endDate: endDate, calendars: nil)
         var eV = self.eventStore.eventsMatchingPredicate(predicate) as [EKEvent]!
+        
         if eV != nil{
             for i in eV{
-               // println("Event Title:\(i.title)")
-                if i.title == self.thisEvent.EventName{
+                 if i.title == self.thisEvent.EventName{
                    // println("Already have the event!")
                     UIAlertView(title: "Duplicate events found", message: "You already have a same event on your calendar. ", delegate: self, cancelButtonTitle: "Ok").show()
                     return
                 }
             }
-            
-        }else{
+        }
+            println("no duplicaetd found. add event on to calendar")
             var event = EKEvent(eventStore: self.eventStore)
-             event.title = self.thisEvent.EventName
+            event.title = self.thisEvent.EventName
             event.startDate = self.thisEvent.eventDate
             event.endDate = self.thisEvent.eventDate
             event.notes = "\(self.thisEvent.eventDetail!)"
@@ -259,7 +251,6 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             var result = self.eventStore.saveEvent(event, span: EKSpanThisEvent, error: nil)
             //println("add into calendar : \(result)")
             UIAlertView(title: "Calendar Item added", message: "Your event is added into your calendar on \(self.thisEvent.eventDate!). ", delegate: self, cancelButtonTitle: "OK").show()
-        }
 
     }
 
@@ -279,7 +270,6 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 if(granted) && (error == nil){
                     
                     println("Access to Calendar/Reminder granted")
-                 
                     self.addEventToCalendar()
                     
                 } else {

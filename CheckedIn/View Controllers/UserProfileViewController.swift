@@ -99,7 +99,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
     
     //MARK: tableview delegate
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        var itemArray = ["RSVP events", "All events" , "Past events"]
+        var itemArray = ["RSVP events", "All events" , "Past RSVPs"]
         var headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 35))
         var control = UISegmentedControl(items: itemArray)
         control.frame = headerView.frame
@@ -319,7 +319,7 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
             } else {
                 if isRsvped == nil {
                     self.events = objects
-                    self.allMyEvents = objects
+                    //self.allMyEvents = objects
                     self.tableView.reloadData()
                 } else {
                     //fetch after rsvp action
