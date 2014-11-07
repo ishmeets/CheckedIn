@@ -20,6 +20,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     let eventStore = EKEventStore()
     let RSVPColor = UIColor(red: 63/255, green: 195/255, blue: 168/255, alpha: 1)
     let cancelColor = UIColor(red: 255/255, green: 193/255, blue: 126/255, alpha: 1)
+    
     var checkedInState: Bool = false
     var checkInButton: UIButton!
     
@@ -79,21 +80,29 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     
     //Check if this event is already checked in or not
     func checkedInStatus(){
+        
+        if(self.RSVPstate == false){
+            self.checkedInState = false
+        }else{
 
-        var user = PFUser.currentUser()
-        var relation = user.relationForKey("checkedIn")
-        var events = ParseEvent.query() as PFQuery
-        events.getObjectInBackgroundWithId(self.eventObjectId) { (object: PFObject!, error: NSError!) -> Void in
-            if object != nil{
-                println("Already Checked in!!!! objectId: \(object.objectId), self.eventID: \(self.eventObjectId)")
-                //Already checked in, display something else
-                self.checkedInState = true
-            }else{
-                println("Not checked in yet!")
-                self.checkedInState = false
+            var user = PFUser.currentUser()
+            var relation = user.relationForKey("checkedIn")
+            var events = ParseEvent.query() as PFQuery
+            events.getObjectInBackgroundWithId(self.eventObjectId) { (object: PFObject!, error: NSError!) -> Void in
+                if object != nil{
+                    println("Already Checked in!!!! objectId: \(object.objectId), self.eventID: \(self.eventObjectId)")
+                    //Already checked in, display something else
+                    self.checkedInState = true
+                    self.tableView.reloadData()
+
+                }else{
+                    println("Not checked in yet!")
+                    self.checkedInState = false
+                }
             }
-            self.tableView.reloadData()
         }
+
+
         
     }
     
@@ -243,6 +252,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         //Had to return cell in every conditional block, can't use lazy initialization :(
+        
         //Header
         if(indexPath.section == 0){
             var cell = tableView.dequeueReusableCellWithIdentifier("EventHeader") as EventHeaderTableViewCell
@@ -262,27 +272,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
             })
             return cell
             
-        }else if(self.canCheckIn() == false && self.checkedInState != true) {
-            //Time
-            switch indexPath.row {
-                
-            case 0:
-                var cell = tableView.dequeueReusableCellWithIdentifier("Time") as EventTimeTableViewCell
-                cell.timeLabel.text = "\(self.thisEvent.dateToShow!)"
-                return cell
-                
-            case 1:
-                var cell = tableView.dequeueReusableCellWithIdentifier("Description") as EventDescriptionTableViewCell
-                cell.descriptionLabel.text = self.thisEvent.eventDetail
-                return cell
-                
-            default:
-                tableView.rowHeight = 380
-                var cell = tableView.dequeueReusableCellWithIdentifier("Map") as EventMapTableViewCell
-                cell.addAnotation(self.thisEvent!)
-                return cell
-            }
-        }else {
+        }else if self.checkedInState == true || self.canCheckIn() == true{
             //Add check in button
             switch indexPath.row {
                 
@@ -302,6 +292,27 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 return cell
                 
             case 2:
+                var cell = tableView.dequeueReusableCellWithIdentifier("Description") as EventDescriptionTableViewCell
+                cell.descriptionLabel.text = self.thisEvent.eventDetail
+                return cell
+                
+            default:
+                tableView.rowHeight = 380
+                var cell = tableView.dequeueReusableCellWithIdentifier("Map") as EventMapTableViewCell
+                cell.addAnotation(self.thisEvent!)
+                return cell
+            }
+           
+        }else{
+            //Time
+            switch indexPath.row {
+                
+            case 0:
+                var cell = tableView.dequeueReusableCellWithIdentifier("Time") as EventTimeTableViewCell
+                cell.timeLabel.text = "\(self.thisEvent.dateToShow!)"
+                return cell
+                
+            case 1:
                 var cell = tableView.dequeueReusableCellWithIdentifier("Description") as EventDescriptionTableViewCell
                 cell.descriptionLabel.text = self.thisEvent.eventDetail
                 return cell
