@@ -21,6 +21,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     let RSVPColor = UIColor(red: 63/255, green: 195/255, blue: 168/255, alpha: 1)
     let cancelColor = UIColor(red: 255/255, green: 193/255, blue: 126/255, alpha: 1)
     var checkedInState: Bool = false
+    var checkInButton: UIButton!
     
     @IBOutlet weak var rsvpButton: UIButton!
     @IBOutlet weak var tableView: UITableView!    
@@ -95,6 +96,7 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func checkInEvent(){
+        println("Check in Event!")
         var user = PFUser.currentUser()
         var relation = user.relationForKey("checkedIn")
         var events = ParseEvent.query() as PFQuery
@@ -103,6 +105,9 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 relation.addObject(object)
                 user.saveEventually()
                 self.checkedInState = true
+                if(self.checkInButton != nil){
+                    self.checkInButton.setImage(UIImage(named: "checkedInButton.png"), forState: .Normal)
+                }
             }else{
                 println("Error in checking in event")
             }
@@ -282,6 +287,12 @@ class EventDetailViewController: UIViewController, UITableViewDelegate, UITableV
                 
             case 0:
                 var cell = tableView.dequeueReusableCellWithIdentifier("CheckInCell") as CheckInTableViewCell
+                if(self.checkedInState){
+                    cell.checkInButton.setImage(UIImage(named: "checkedInButton.png"), forState: .Normal)
+                }else{
+                    cell.checkInButton.addTarget(self, action: "checkInEvent", forControlEvents: .TouchUpInside)
+                }
+                self.checkInButton = cell.checkInButton
                 return cell
                 
             case 1:

@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class CheckInTableViewCell: UITableViewCell {
 
     @IBOutlet weak var checkInButton: UIButton!
@@ -22,7 +23,5 @@ class CheckInTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    @IBAction func onCheckIn(sender: AnyObject) {
-        println("Check in!")
-    }
+
 }

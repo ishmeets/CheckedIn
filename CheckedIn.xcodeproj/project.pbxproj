@@ -25,6 +25,8 @@
 		9356A202CB027A3953679D15 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB3FB137615D915D37781E3 /* libPods.a */; };
 		D006CCC919FB264400C067BB /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D006CCC819FB264400C067BB /* UserProfileViewController.swift */; };
 		D0077EFD1A0C9383004CCE35 /* CheckInTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0077EFC1A0C9383004CCE35 /* CheckInTableViewCell.swift */; };
+		D0077F001A0CB049004CCE35 /* checkedInButton.png in Resources */ = {isa = PBXBuildFile; fileRef = D0077EFE1A0CB049004CCE35 /* checkedInButton.png */; };
+		D0077F011A0CB049004CCE35 /* checkInButton.png in Resources */ = {isa = PBXBuildFile; fileRef = D0077EFF1A0CB049004CCE35 /* checkInButton.png */; };
 		D01C8E691A0ABD440029367F /* addEvent.png in Resources */ = {isa = PBXBuildFile; fileRef = D01C8E681A0ABD440029367F /* addEvent.png */; };
 		D025AAE51A06E4B2009F08A8 /* EventRSVPButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D025AAE41A06E4B2009F08A8 /* EventRSVPButtonView.swift */; };
 		D030FB321A00B02C003F0384 /* rsvpedMark.png in Resources */ = {isa = PBXBuildFile; fileRef = D030FB311A00B02C003F0384 /* rsvpedMark.png */; };
@@ -106,6 +108,8 @@
 		9DCEE7B702F45ED20D3EDB25 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		D006CCC819FB264400C067BB /* UserProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		D0077EFC1A0C9383004CCE35 /* CheckInTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckInTableViewCell.swift; sourceTree = "<group>"; };
+		D0077EFE1A0CB049004CCE35 /* checkedInButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkedInButton.png; path = Images.xcassets/checkedInButton.png; sourceTree = "<group>"; };
+		D0077EFF1A0CB049004CCE35 /* checkInButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkInButton.png; path = Images.xcassets/checkInButton.png; sourceTree = "<group>"; };
 		D01C8E681A0ABD440029367F /* addEvent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = addEvent.png; path = Images.xcassets/addEvent.png; sourceTree = "<group>"; };
 		D025AAE41A06E4B2009F08A8 /* EventRSVPButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EventRSVPButtonView.swift; path = "View Controllers/EventRSVPButtonView.swift"; sourceTree = "<group>"; };
 		D030FB311A00B02C003F0384 /* rsvpedMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rsvpedMark.png; path = Images.xcassets/rsvpedMark.png; sourceTree = "<group>"; };
@@ -277,6 +281,8 @@
 		D041EDF319F82323005AF45C /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				D0077EFE1A0CB049004CCE35 /* checkedInButton.png */,
+				D0077EFF1A0CB049004CCE35 /* checkInButton.png */,
 				D0C2AA6F1A0C839400E8986E /* profileBG.png */,
 				D01C8E681A0ABD440029367F /* addEvent.png */,
 				D078FFB11A088155002FECE5 /* backButton.png */,
@@ -429,6 +435,7 @@
 				828C6F5219EA8076002FE979 /* Main.storyboard in Resources */,
 				D0763F3C1A073EB800FF15F6 /* logo07.png in Resources */,
 				D01C8E691A0ABD440029367F /* addEvent.png in Resources */,
+				D0077F011A0CB049004CCE35 /* checkInButton.png in Resources */,
 				D074DB4E19FDF3B20038A3F2 /* TableHeader.xib in Resources */,
 				828C6F5719EA8076002FE979 /* LaunchScreen.xib in Resources */,
 				D0763F361A073EB800FF15F6 /* logo01.png in Resources */,
@@ -447,6 +454,7 @@
 				D037FA3919FCC37E002788EE /* Default.png in Resources */,
 				D0763F371A073EB800FF15F6 /* logo02.png in Resources */,
 				D0C2AA701A0C839400E8986E /* profileBG.png in Resources */,
+				D0077F001A0CB049004CCE35 /* checkedInButton.png in Resources */,
 				D0763F381A073EB800FF15F6 /* logo03.png in Resources */,
 				D0763F3B1A073EB800FF15F6 /* logo06.png in Resources */,
 				D0661DE41A009B450060B8D0 /* testProfileIcon.png in Resources */,

@@ -570,18 +570,14 @@
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ons-g5-iJV" id="fP4-fi-nMA">
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5ry-ou-Cxh">
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5ry-ou-Cxh">
                                                             <rect key="frame" x="200" y="16" width="200" height="36"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="200" id="ahc-ga-RIV"/>
                                                             </constraints>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                                            <state key="normal" title="Check in">
+                                                            <state key="normal" image="checkInButton.png">
                                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                             </state>
-                                                            <connections>
-                                                                <action selector="onCheckIn:" destination="ons-g5-iJV" eventType="touchUpInside" id="zJr-qr-NbO"/>
-                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <constraints>
@@ -801,6 +797,7 @@
         <image name="addEvent.png" width="50" height="50"/>
         <image name="backButton.png" width="50" height="50"/>
         <image name="cancelButton.png" width="40" height="40"/>
+        <image name="checkInButton.png" width="200" height="36"/>
         <image name="logoutButton.png" width="40" height="40"/>
         <image name="mapButton.png" width="40" height="40"/>
         <image name="roundedDialog.png" width="494" height="208"/>
