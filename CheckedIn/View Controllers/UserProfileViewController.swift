@@ -145,11 +145,6 @@ class UserProfileViewController: UIViewController,UITableViewDelegate, UITableVi
             img?.getDataInBackgroundWithBlock({ (imageData: NSData!, error:NSError!) -> Void in
                 if imageData != nil {
                     cell.profileImage.image = UIImage(data: imageData)
-                    cell.bgImage.image = cell.profileImage.image
-                    var blur = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.Dark))
-                    blur.frame = cell.bgImage.frame
-                    cell.bgImage.addSubview(blur)
-                    cell.backgroundView = cell.bgImage
 
                 }
             })
